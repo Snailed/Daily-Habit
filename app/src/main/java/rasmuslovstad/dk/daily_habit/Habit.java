@@ -1,8 +1,6 @@
 package rasmuslovstad.dk.daily_habit;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +12,6 @@ import android.widget.TextView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
 
 /**
  * Created by rasmuslovstad on 1/4/17.
@@ -22,32 +19,40 @@ import java.util.Hashtable;
 
 public class Habit implements Serializable{
 
-    int reps;
+    int repetitions;
     public String titel;
-
-    static int habitcounter = 0;
+    static int numberOfHabits = 0;
     boolean completedObjective = false;
+
+    //views that belong to the habit
     Button btHabit;
+    TextView tvHabit;
+
+    //List of views and habits. Every habit has a view on the same index in each list.
     static ArrayList<View> views;
     static ArrayList<Habit> habits;
-    Habit(int reps, String titel) {
+
+
+    Habit(int repetitions, String titel) {
         this.titel = titel;
-        this.reps = reps;
+        this.repetitions = repetitions;
 
         views = Datamanager.getInstance().views;
         habits = Datamanager.getInstance().habits;
     }
     LinearLayout getLayout(Context context) {
+
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.habit,null,false);
-        TextView tvHabit = (TextView) linearLayout.findViewById(R.id.habitText);
+
+        tvHabit = (TextView) linearLayout.findViewById(R.id.habitText);
         tvHabit.setText(titel);
         tvHabit.setTextSize(25);
         btHabit = (Button) linearLayout.findViewById(R.id.habitButton);
-        if (reps != 0)btHabit.setText(""+reps);
+        if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
-        linearLayout.setY(150*++habitcounter);
+        linearLayout.setY(150*++numberOfHabits);
         views.add(btHabit);
         Log.d("Habit", "Tilføjede "+btHabit+" til views som nu har størrelsen "+views.size());
         habits.add(this);
@@ -66,7 +71,7 @@ public class Habit implements Serializable{
 
     void undoCompleteObjective() {
         completedObjective = false;
-        if (reps != 0)btHabit.setText(""+reps);
+        if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
         setMargins(btHabit,0,0,0,0);
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
@@ -85,7 +90,7 @@ public class Habit implements Serializable{
                 }
             }
             Log.d("Habit modtager", "Der findes ikke en tilsvarende habit til"+view);
-        } else Log.d("Habit", "Der opstod en exception! "+view+" findes ikke i "+ Arrays.toString(views.toArray())+"  Størrelse:  "+views.size()+ " Habitcounter: "+habitcounter);
+        } else Log.d("Habit", "Der opstod en exception! "+view+" findes ikke i "+ Arrays.toString(views.toArray())+"  Størrelse:  "+views.size()+ " Habitcounter: "+ numberOfHabits);
         return null;
     }
 
@@ -97,7 +102,7 @@ public class Habit implements Serializable{
                 }
             }
             Log.d("Habit modtager", "Der findes ikke et tilsvarende view til "+habit);
-        } else Log.d("Habit", "Der opstod en exception! "+habit+" findes ikke i "+ Arrays.toString(habits.toArray())+"  Størrelse:  "+habits.size()+ " Habitcounter: "+habitcounter);
+        } else Log.d("Habit", "Der opstod en exception! "+habit+" findes ikke i "+ Arrays.toString(habits.toArray())+"  Størrelse:  "+habits.size()+ " Habitcounter: "+ numberOfHabits);
         return null;
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class CreateHabit extends AppCompatActivity {
     EditText title;
@@ -22,16 +23,19 @@ public class CreateHabit extends AppCompatActivity {
     }
 
     public void pressConfirmCreateNewHabit(View v) {
+        if (title.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "You have to give your habit a title...", Toast.LENGTH_SHORT).show();
+        } else {
+            int repetitioner = 0;
+            if (!reps.getText().toString().equals("")) {
+                repetitioner = Integer.parseInt(reps.getText().toString());
+            }
 
-        int repetitioner = 0;
-        if (!reps.getText().toString().equals("")) {
-            repetitioner = Integer.parseInt(reps.getText().toString());
+            Habit resultHabit = new Habit(repetitioner, title.getText().toString());
+            Intent result = new Intent();
+            result.putExtra("Habit", resultHabit);
+            setResult(RESULT_OK, result);
+            finish();
         }
-
-        Habit resultHabit = new Habit(repetitioner,title.getText().toString());
-        Intent result = new Intent();
-        result.putExtra("Habit",resultHabit);
-        setResult(RESULT_OK, result);
-        finish();
     }
 }
