@@ -13,10 +13,10 @@ import android.widget.RelativeLayout;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{
-    ArrayList habitlist = new ArrayList<Habit>();
+    //request codes
+    static final int RECIEVE_HABIT = 1;
+
     RelativeLayout backgroundLayout;
-    LinearLayout habit;
-    LayoutInflater layoutInflater;
     Habit pushups;
     Habit weightlifting;
     Button btTilfoej;
@@ -25,14 +25,11 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         backgroundLayout = (RelativeLayout) findViewById(R.id.activity_main);
-        habitlist.add(new Habit(70, "Pushups",this));
-        //Log.d("Test",habitlist.get(habitlist.size()-1).getLayout());
-        //backgroundLayout.addView();
         btTilfoej = (Button) findViewById(R.id.btNewHabit);
-        pushups = new Habit(70, "Pushups",this);
-        weightlifting = new Habit(30, "Weight Lifting",this);
-        backgroundLayout.addView(pushups.getLayout());
-        backgroundLayout.addView(weightlifting.getLayout());
+        pushups = new Habit(70, "Pushups");
+        weightlifting = new Habit(30, "Weight Lifting");
+        backgroundLayout.addView(pushups.getLayout(this));
+        backgroundLayout.addView(weightlifting.getLayout(this));
 
 
     }
@@ -51,9 +48,22 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void pressCreateNewHabit(View view) {
+
         Intent intent = new Intent(this,CreateHabit.class);
-        startActivity(intent);
+        startActivityForResult(intent, RECIEVE_HABIT);
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) Log.d("MainActivity", "Intenten som er modtaget fra CreateHabit er null... "+data);
+
+        if (requestCode == RECIEVE_HABIT) {
+
+            if (resultCode == RESULT_OK) {
+                backgroundLayout.addView(((Habit) data.getExtras().getSerializable("Habit")).getLayout(this));
+            }
+
+        }
+    }
 }

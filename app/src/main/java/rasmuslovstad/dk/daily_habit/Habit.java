@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -19,30 +20,32 @@ import java.util.Hashtable;
  * Created by rasmuslovstad on 1/4/17.
  */
 
-public class Habit {
+public class Habit implements Serializable{
+
     int reps;
-    String titel;
-    Context context;
+    public String titel;
+
     static int habitcounter = 0;
     boolean completedObjective = false;
     Button btHabit;
     static ArrayList<View> views;
     static ArrayList<Habit> habits;
-    Habit(int reps, String titel,Context context) {
+    Habit(int reps, String titel) {
         this.titel = titel;
         this.reps = reps;
-        this.context = context;
+
         views = Datamanager.getInstance().views;
         habits = Datamanager.getInstance().habits;
     }
-    LinearLayout getLayout() {
+    LinearLayout getLayout(Context context) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.habit,null,false);
         TextView tvHabit = (TextView) linearLayout.findViewById(R.id.habitText);
         tvHabit.setText(titel);
         tvHabit.setTextSize(25);
         btHabit = (Button) linearLayout.findViewById(R.id.habitButton);
-        btHabit.setText(""+reps);
+        if (reps != 0)btHabit.setText(""+reps);
+        else btHabit.setText("");
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
         linearLayout.setY(150*++habitcounter);
         views.add(btHabit);
@@ -63,7 +66,8 @@ public class Habit {
 
     void undoCompleteObjective() {
         completedObjective = false;
-        btHabit.setText(""+reps);
+        if (reps != 0)btHabit.setText(""+reps);
+        else btHabit.setText("");
         setMargins(btHabit,0,0,0,0);
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
 
@@ -80,12 +84,24 @@ public class Habit {
                     return habits.get(i);
                 }
             }
-            Log.d("Habit modtager", "Hvad sker der? Dette er ikke en habit!"+view);
+            Log.d("Habit modtager", "Der findes ikke en tilsvarende habit til"+view);
         } else Log.d("Habit", "Der opstod en exception! "+view+" findes ikke i "+ Arrays.toString(views.toArray())+"  Størrelse:  "+views.size()+ " Habitcounter: "+habitcounter);
         return null;
     }
 
-    public static void setMargins (View v, int left, int top, int right, int bottom) {
+    static View getViewFromHabit(Habit habit) {
+        if (habits.contains(habit)) {
+            for (int i = 0; i < habits.size(); i++) {
+                if (habits.get(i)==habit) {
+                    return views.get(i);
+                }
+            }
+            Log.d("Habit modtager", "Der findes ikke et tilsvarende view til "+habit);
+        } else Log.d("Habit", "Der opstod en exception! "+habit+" findes ikke i "+ Arrays.toString(habits.toArray())+"  Størrelse:  "+habits.size()+ " Habitcounter: "+habitcounter);
+        return null;
+    }
+
+    private static void setMargins (View v, int left, int top, int right, int bottom) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
             p.setMargins(left, top, right, bottom);
