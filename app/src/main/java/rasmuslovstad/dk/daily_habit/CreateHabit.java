@@ -2,6 +2,7 @@ package rasmuslovstad.dk.daily_habit;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class CreateHabit extends AppCompatActivity {
@@ -14,8 +15,8 @@ public class CreateHabit extends AppCompatActivity {
         setContentView(R.layout.activity_create_habit);
     }
 
-    void pressConfirmCreateNewHabit(View view) {
-
+    public void pressConfirmCreateNewHabit(View v) {
+        Log.d("MainActivity","Plingo!");
 
     }
 }

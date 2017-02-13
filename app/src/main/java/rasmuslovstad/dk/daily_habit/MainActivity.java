@@ -29,15 +29,16 @@ public class MainActivity extends AppCompatActivity{
         //Log.d("Test",habitlist.get(habitlist.size()-1).getLayout());
         //backgroundLayout.addView();
         btTilfoej = (Button) findViewById(R.id.btNewHabit);
-
+        pushups = new Habit(70, "Pushups",this);
         weightlifting = new Habit(30, "Weight Lifting",this);
+        backgroundLayout.addView(pushups.getLayout());
         backgroundLayout.addView(weightlifting.getLayout());
 
 
     }
 
     public void pressComplete(View view) {
-        Log.d("MainActivity ", "Pling!");
+        //Log.d("MainActivity ", "A button was pushed!");
         if (view instanceof Button) {
             Habit habit = Habit.getHabitFromView(view);
             //Log.d("Habit:", "Habit "+habit);
@@ -54,4 +55,5 @@ public class MainActivity extends AppCompatActivity{
         startActivity(intent);
 
     }
+
 }

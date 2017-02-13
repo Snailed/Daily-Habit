@@ -26,16 +26,14 @@ public class Habit {
     static int habitcounter = 0;
     boolean completedObjective = false;
     Button btHabit;
-    static Hashtable<View,Habit> buttonstohabits;
     static ArrayList<View> views;
     static ArrayList<Habit> habits;
     Habit(int reps, String titel,Context context) {
         this.titel = titel;
         this.reps = reps;
         this.context = context;
-        buttonstohabits = new Hashtable<View, Habit>();
-        if (views == null)views = new ArrayList<>();
-        if (habits == null)habits = new ArrayList<>();
+        views = Datamanager.getInstance().views;
+        habits = Datamanager.getInstance().habits;
     }
     LinearLayout getLayout() {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -50,14 +48,14 @@ public class Habit {
         views.add(btHabit);
         Log.d("Habit", "Tilføjede "+btHabit+" til views som nu har størrelsen "+views.size());
         habits.add(this);
-        //setMargins(linearLayout,10,10,10,10);
+
         return linearLayout;
     }
 
     void completeObjective() {
         completedObjective = true;
         btHabit.setText("");
-        setMargins(btHabit,0,-25,0,0); //Gør så dette ændrer på Habit-layoutet.
+        setMargins(btHabit,0,-20,0,0); //Gør så dette ændrer på Habit-layoutet.
         btHabit.setBackgroundResource(R.drawable.completetaskbuttonpressed);
 
 
@@ -74,6 +72,7 @@ public class Habit {
     boolean habitState() {
         return completedObjective;
     }
+
     static Habit getHabitFromView(View view) {
         if (views.contains(view)) {
             for (int i = 0; i < views.size(); i++) {
@@ -84,10 +83,6 @@ public class Habit {
             Log.d("Habit modtager", "Hvad sker der? Dette er ikke en habit!"+view);
         } else Log.d("Habit", "Der opstod en exception! "+view+" findes ikke i "+ Arrays.toString(views.toArray())+"  Størrelse:  "+views.size()+ " Habitcounter: "+habitcounter);
         return null;
-    }
-
-    void completedTask(View view) {
-        Log.d("Habit", "Hallo, det er her det sker!");
     }
 
     public static void setMargins (View v, int left, int top, int right, int bottom) {
