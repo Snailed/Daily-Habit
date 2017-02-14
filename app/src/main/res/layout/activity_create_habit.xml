@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_create_habit"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -70,14 +71,17 @@
         android:id="@+id/etUnit"
         android:text="" />
 
-    <Button
-        android:text="Create Habit"
+    <com.getbase.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:id="@+id/button"
-        android:onClick="pressConfirmCreateNewHabit"/>
+        fab:fab_colorNormal="@color/colorAccent"
+        fab:fab_title="Create New Habit"
+        android:onClick="pressConfirmCreateNewHabit"
+        android:id="@+id/btPressCreateNewHabit"
+        fab:fab_icon="@drawable/ic_create_black_24dp"
+        fab:fab_colorPressed="@color/colorAccentPressed"/>
 
 </RelativeLayout>

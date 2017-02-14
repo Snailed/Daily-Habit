@@ -1,6 +1,8 @@
 package rasmuslovstad.dk.daily_habit;
 
+import android.content.Context;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
@@ -9,8 +11,7 @@ import java.util.ArrayList;
  */
 public class Datamanager {
     private static Datamanager ourInstance = new Datamanager();
-    public ArrayList<View> views = new ArrayList<>();
-    public ArrayList<Habit> habits = new ArrayList<>();
+    public ArrayList<Habit> habitList = new ArrayList<>();
 
     public static Datamanager getInstance() {
         return ourInstance;
@@ -18,4 +19,16 @@ public class Datamanager {
 
     private Datamanager() {
     }
+
+    public ArrayList<LinearLayout> getAllLayout(Context context) {
+        ArrayList<LinearLayout> output = new ArrayList<>();
+        for (Habit i : habitList) {
+            output.add(i.getLayout(context));
+        }
+        return output;
+    }
+    public void addHabit(Habit habit) {
+        habitList.add(habit);
+    }
+
 }

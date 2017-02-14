@@ -36,11 +36,12 @@ public class Habit implements Serializable{
     Habit(int repetitions, String titel) {
         this.titel = titel;
         this.repetitions = repetitions;
+        views = new ArrayList<>();
+        habits = new ArrayList<>();
 
-        views = Datamanager.getInstance().views;
-        habits = Datamanager.getInstance().habits;
     }
     LinearLayout getLayout(Context context) {
+
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.habit,null,false);
@@ -48,11 +49,13 @@ public class Habit implements Serializable{
         tvHabit = (TextView) linearLayout.findViewById(R.id.habitText);
         tvHabit.setText(titel);
         tvHabit.setTextSize(25);
+
         btHabit = (Button) linearLayout.findViewById(R.id.habitButton);
         if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
         linearLayout.setY(150*++numberOfHabits);
+
         views.add(btHabit);
         Log.d("Habit", "Tilføjede "+btHabit+" til views som nu har størrelsen "+views.size());
         habits.add(this);
@@ -63,7 +66,7 @@ public class Habit implements Serializable{
     void completeObjective() {
         completedObjective = true;
         btHabit.setText("");
-        setMargins(btHabit,0,-20,0,0); //Gør så dette ændrer på Habit-layoutet.
+        setMargins(btHabit,0,-20,0,0);
         btHabit.setBackgroundResource(R.drawable.completetaskbuttonpressed);
 
 
@@ -89,8 +92,8 @@ public class Habit implements Serializable{
                     return habits.get(i);
                 }
             }
-            Log.d("Habit modtager", "Der findes ikke en tilsvarende habit til"+view);
-        } else Log.d("Habit", "Der opstod en exception! "+view+" findes ikke i "+ Arrays.toString(views.toArray())+"  Størrelse:  "+views.size()+ " Habitcounter: "+ numberOfHabits);
+            Log.d("Habit", "There is no corresponding habit to the view "+view);
+        } else Log.d("Habit", "Exception! "+view+" was not found in "+ Arrays.toString(views.toArray())+"  Size:  "+views.size()+ " Number of habits: "+ numberOfHabits);
         return null;
     }
 
@@ -101,8 +104,8 @@ public class Habit implements Serializable{
                     return views.get(i);
                 }
             }
-            Log.d("Habit modtager", "Der findes ikke et tilsvarende view til "+habit);
-        } else Log.d("Habit", "Der opstod en exception! "+habit+" findes ikke i "+ Arrays.toString(habits.toArray())+"  Størrelse:  "+habits.size()+ " Habitcounter: "+ numberOfHabits);
+            Log.d("Habit", "There is no corresponding view to the habit "+habit);
+        } else Log.d("Habit", "Exception! "+habit+" was not found in "+ Arrays.toString(habits.toArray())+"  Size:  "+habits.size()+ " Number of habits: "+ numberOfHabits);
         return null;
     }
 

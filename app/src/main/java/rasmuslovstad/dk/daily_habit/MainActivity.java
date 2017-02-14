@@ -1,6 +1,7 @@
 package rasmuslovstad.dk.daily_habit;
 
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -19,18 +22,21 @@ public class MainActivity extends AppCompatActivity{
     RelativeLayout backgroundLayout;
     Habit pushups;
     Habit weightlifting;
-    Button btTilfoej;
+    FloatingActionButton btTilfoej;
+    Datamanager datamanager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        datamanager = Datamanager.getInstance();
+
         setContentView(R.layout.activity_main);
         backgroundLayout = (RelativeLayout) findViewById(R.id.activity_main);
-        btTilfoej = (Button) findViewById(R.id.btNewHabit);
+        btTilfoej = (FloatingActionButton) findViewById(R.id.btNewHabit);
         pushups = new Habit(70, "Pushups");
         weightlifting = new Habit(30, "Weight Lifting");
-        backgroundLayout.addView(pushups.getLayout(this));
-        backgroundLayout.addView(weightlifting.getLayout(this));
-
+        datamanager.addHabit(pushups);
+        datamanager.addHabit(weightlifting);
+        addHabits();
 
     }
 
@@ -61,9 +67,19 @@ public class MainActivity extends AppCompatActivity{
         if (requestCode == RECIEVE_HABIT) {
 
             if (resultCode == RESULT_OK) {
-                backgroundLayout.addView(((Habit) data.getExtras().getSerializable("Habit")).getLayout(this));
+                datamanager.addHabit((Habit) data.getExtras().getSerializable("Habit"));
+                recreate();
             }
 
         }
     }
+
+    private void addHabits() {
+        for (LinearLayout i: datamanager.getAllLayout(this)) {
+            backgroundLayout.addView(i);
+        }
+
+    }
+
+
 }

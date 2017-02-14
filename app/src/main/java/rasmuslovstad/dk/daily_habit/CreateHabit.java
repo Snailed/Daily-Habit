@@ -24,7 +24,7 @@ public class CreateHabit extends AppCompatActivity {
 
     public void pressConfirmCreateNewHabit(View v) {
         if (title.getText().toString().equals("")) {
-            Toast.makeText(getApplicationContext(), "You have to give your habit a title...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "You have to give your habit a title", Toast.LENGTH_SHORT).show();
         } else {
             int repetitioner = 0;
             if (!reps.getText().toString().equals("")) {
