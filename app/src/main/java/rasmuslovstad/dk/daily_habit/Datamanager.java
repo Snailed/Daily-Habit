@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -11,7 +12,8 @@ import java.util.ArrayList;
  */
 public class Datamanager {
     private static Datamanager ourInstance = new Datamanager();
-    public ArrayList<Habit> habitList = new ArrayList<>();
+    public ArrayList<HabitButtonContainer> habitList = new ArrayList<>();
+    boolean firstTimeRun = true;
 
     public static Datamanager getInstance() {
         return ourInstance;
@@ -22,12 +24,12 @@ public class Datamanager {
 
     public ArrayList<LinearLayout> getAllLayout(Context context) {
         ArrayList<LinearLayout> output = new ArrayList<>();
-        for (Habit i : habitList) {
+        for (HabitButtonContainer i : habitList) {
             output.add(i.getLayout(context));
         }
         return output;
     }
-    public void addHabit(Habit habit) {
+    public void addHabit(HabitButtonContainer habit) {
         habitList.add(habit);
     }
 

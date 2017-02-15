@@ -29,18 +29,18 @@ public class Habit implements Serializable{
     TextView tvHabit;
 
     //List of views and habits. Every habit has a view on the same index in each list.
-    static ArrayList<View> views;
-    static ArrayList<Habit> habits;
+    static ArrayList<View> views = new ArrayList<>();
+    static ArrayList<Habit> habits = new ArrayList<>();
 
+    transient Datamanager datamanager = Datamanager.getInstance();
 
     Habit(int repetitions, String titel) {
         this.titel = titel;
         this.repetitions = repetitions;
-        views = new ArrayList<>();
-        habits = new ArrayList<>();
+
 
     }
-    LinearLayout getLayout(Context context) {
+    LinearLayout createLayout(Context context) { //Gets called when you want a new layout
 
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -50,15 +50,24 @@ public class Habit implements Serializable{
         tvHabit.setText(titel);
         tvHabit.setTextSize(25);
 
+
         btHabit = (Button) linearLayout.findViewById(R.id.habitButton);
         if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
-        linearLayout.setY(150*++numberOfHabits);
-
+        setMargins(btHabit,0,0,0,10);
         views.add(btHabit);
         Log.d("Habit", "Tilføjede "+btHabit+" til views som nu har størrelsen "+views.size());
-        habits.add(this);
+        //linearLayout.setY(150*++numberOfHabits);
+
+        if (!habits.contains(this)) {
+            habits.add(this);
+
+        }
+        if (datamanager == null) datamanager = Datamanager.getInstance();
+
+
+
 
         return linearLayout;
     }
@@ -66,7 +75,7 @@ public class Habit implements Serializable{
     void completeObjective() {
         completedObjective = true;
         btHabit.setText("");
-        setMargins(btHabit,0,-20,0,0);
+        setMargins(btHabit,0,0,0,10);
         btHabit.setBackgroundResource(R.drawable.completetaskbuttonpressed);
 
 
@@ -76,7 +85,7 @@ public class Habit implements Serializable{
         completedObjective = false;
         if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
-        setMargins(btHabit,0,0,0,0);
+        setMargins(btHabit,0,0,0,10);
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
 
     }

@@ -1,11 +1,9 @@
 package rasmuslovstad.dk.daily_habit;
 
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,29 +11,30 @@ import android.widget.RelativeLayout;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity{
     //request codes
     static final int RECIEVE_HABIT = 1;
+    public static final boolean DEVELOPER_MODE = true;
+
 
     RelativeLayout backgroundLayout;
+    LinearLayout habitlistLayout;
     Habit pushups;
     Habit weightlifting;
     FloatingActionButton btTilfoej;
     Datamanager datamanager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         datamanager = Datamanager.getInstance();
-
         setContentView(R.layout.activity_main);
         backgroundLayout = (RelativeLayout) findViewById(R.id.activity_main);
+        habitlistLayout = (LinearLayout) findViewById(R.id.habitlist);
         btTilfoej = (FloatingActionButton) findViewById(R.id.btNewHabit);
-        pushups = new Habit(70, "Pushups");
-        weightlifting = new Habit(30, "Weight Lifting");
-        datamanager.addHabit(pushups);
-        datamanager.addHabit(weightlifting);
+
+
+        if (DEVELOPER_MODE) addDeveloperHabits();
         addHabits();
 
     }
@@ -45,6 +44,7 @@ public class MainActivity extends AppCompatActivity{
         if (view instanceof Button) {
             Habit habit = Habit.getHabitFromView(view);
             //Log.d("Habit:", "Habit "+habit);
+            if (habit == null) Log.d("MainActivity", "Halløj! Denne view har ingen habit :( " + view + " Liste: " + Habit.habits);
             if (habit.habitState()) {
                 habit.undoCompleteObjective();
             } else {
@@ -67,8 +67,10 @@ public class MainActivity extends AppCompatActivity{
         if (requestCode == RECIEVE_HABIT) {
 
             if (resultCode == RESULT_OK) {
-                datamanager.addHabit((Habit) data.getExtras().getSerializable("Habit"));
-                recreate();
+
+                datamanager.addHabit(new HabitButtonContainer((Habit) data.getExtras().getSerializable("Habit"),((Habit) data.getExtras().getSerializable("Habit")).createLayout(this)));
+                habitlistLayout.addView(((Habit) data.getExtras().getSerializable("Habit")).createLayout(this));
+                Habit.habits.add((Habit) data.getExtras().getSerializable("Habit"));
             }
 
         }
@@ -76,9 +78,21 @@ public class MainActivity extends AppCompatActivity{
 
     private void addHabits() {
         for (LinearLayout i: datamanager.getAllLayout(this)) {
-            backgroundLayout.addView(i);
+
+            habitlistLayout.addView(i);
         }
 
+    }
+
+    private void addDeveloperHabits() {
+        if (datamanager.firstTimeRun) {
+            Log.d("MainActivity", "Added first time developer habits");
+            pushups = new Habit(70, "Pushups");
+            weightlifting = new Habit(30, "Weight Lifting");
+            datamanager.addHabit(new HabitButtonContainer(pushups,pushups.createLayout(this)));
+            datamanager.addHabit(new HabitButtonContainer(weightlifting,weightlifting.createLayout(this)));
+            datamanager.firstTimeRun = false;
+        }
     }
 
 

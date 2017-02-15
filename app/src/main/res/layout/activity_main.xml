@@ -11,10 +11,23 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="rasmuslovstad.dk.daily_habit.MainActivity">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/habitheadertext">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/habitlist" />
+    </ScrollView>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Habits:" />
+        android:text="Habits:"
+        android:id="@+id/habitheadertext" />
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/right_labels"
