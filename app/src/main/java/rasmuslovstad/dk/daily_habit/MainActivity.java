@@ -1,5 +1,6 @@
 package rasmuslovstad.dk.daily_habit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity{
     Habit weightlifting;
     FloatingActionButton btTilfoej;
     Datamanager datamanager;
+    static boolean preparedForRemoval = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +35,6 @@ public class MainActivity extends AppCompatActivity{
         habitlistLayout = (LinearLayout) findViewById(R.id.habitlist);
         btTilfoej = (FloatingActionButton) findViewById(R.id.btNewHabit);
 
-
         if (DEVELOPER_MODE) addDeveloperHabits();
         addHabits();
 
@@ -41,22 +42,45 @@ public class MainActivity extends AppCompatActivity{
 
     public void pressComplete(View view) {
         //Log.d("MainActivity ", "A button was pushed!");
-        if (view instanceof Button) {
-            Habit habit = Habit.getHabitFromView(view);
-            //Log.d("Habit:", "Habit "+habit);
-            if (habit == null) Log.d("MainActivity", "Halløj! Denne view har ingen habit :( " + view + " Liste: " + Habit.habits);
-            if (habit.habitState()) {
-                habit.undoCompleteObjective();
-            } else {
-                habit.completeObjective();
+
+        if (!preparedForRemoval) { //When the habits are pressed, they should check or uncheck. If preparedForRemoval is true, the habit should disappear
+            if (view instanceof Button) {
+
+                Habit habit = datamanager.getHabitButtonContainer(view,this).getHabit();
+                //Log.d("Habit:", "Habit "+habit);
+                if (habit == null) Log.d("MainActivity", "Halløj! Denne view har ingen habit :( " + view + " Liste: " + Habit.habits);
+                if (habit.habitState()) {
+                    habit.undoCompleteObjective();
+                } else {
+                    habit.completeObjective(view);
+                }
             }
+
+        } else {
+            datamanager.getInstance().removeHabit(datamanager.getHabitButtonContainer(view,this));
+            recreate();
         }
+
     }
 
     public void pressCreateNewHabit(View view) {
-
+        datamanager.undoPrepareButtonsForRemoval(this);
+        preparedForRemoval = false;
         Intent intent = new Intent(this,CreateHabit.class);
         startActivityForResult(intent, RECIEVE_HABIT);
+
+
+    }
+
+    public void pressRemoveHabit(View view) {
+        if (!preparedForRemoval) {
+            datamanager.prepareButtonsForRemoval(this);
+            preparedForRemoval = true;
+        } else {
+            datamanager.undoPrepareButtonsForRemoval(this);
+            preparedForRemoval = false;
+
+        }
 
     }
 
@@ -67,10 +91,13 @@ public class MainActivity extends AppCompatActivity{
         if (requestCode == RECIEVE_HABIT) {
 
             if (resultCode == RESULT_OK) {
+                HabitButtonContainer habitButtonContainer = new HabitButtonContainer((Habit) data.getExtras().getSerializable("Habit"),((Habit) data.getExtras().getSerializable("Habit")).createLayout(this));
+                datamanager.addHabit(habitButtonContainer);
+                //habitlistLayout.addView(((Habit) data.getExtras().getSerializable("Habit")).createLayout(this));
+                habitlistLayout.removeAllViews();
+                addHabits();
 
-                datamanager.addHabit(new HabitButtonContainer((Habit) data.getExtras().getSerializable("Habit"),((Habit) data.getExtras().getSerializable("Habit")).createLayout(this)));
-                habitlistLayout.addView(((Habit) data.getExtras().getSerializable("Habit")).createLayout(this));
-                Habit.habits.add((Habit) data.getExtras().getSerializable("Habit"));
+
             }
 
         }
@@ -94,6 +121,5 @@ public class MainActivity extends AppCompatActivity{
             datamanager.firstTimeRun = false;
         }
     }
-
 
 }

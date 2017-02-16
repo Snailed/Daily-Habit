@@ -59,7 +59,8 @@
             fab:fab_colorNormal="@color/colorAccent"
             fab:fab_title="Remove Habit"
             fab:fab_icon="@drawable/ic_clear_black_24dp"
-            fab:fab_colorPressed="@color/colorAccentPressed"/>
+            fab:fab_colorPressed="@color/colorAccentPressed"
+            android:onClick="pressRemoveHabit"/>
 
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

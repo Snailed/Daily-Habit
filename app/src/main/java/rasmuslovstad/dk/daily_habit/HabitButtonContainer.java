@@ -18,6 +18,7 @@ import java.io.Serializable;
 public class HabitButtonContainer implements Serializable{
     Habit habit;
     View view;
+    Button button;
     public HabitButtonContainer(Habit habit, View view) {
         this.habit = habit;
         this.view = view;
@@ -28,6 +29,12 @@ public class HabitButtonContainer implements Serializable{
     }
     View getView() {
         return view;
+    }
+
+    Button getButton(Context context) {
+        habit.updateButton(view);
+        button = habit.getButton();
+        return button;
     }
 
     LinearLayout getLayout(Context context) { //Returns a linear layout (Gets used whenever you want a layout that already exists)
@@ -43,7 +50,15 @@ public class HabitButtonContainer implements Serializable{
             ((ViewGroup) view.getParent()).removeView(view);
         }
         linearLayout.addView(view,0);
+
         return linearLayout;
     }
 
+    public void prepareForRemoval(Context context) {
+        habit.prepareForRemoval(context, view);
+    }
+
+    public void delete() {
+        habit.delete();
+    }
 }

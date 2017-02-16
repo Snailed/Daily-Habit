@@ -1,6 +1,7 @@
 package rasmuslovstad.dk.daily_habit;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -31,6 +32,42 @@ public class Datamanager {
     }
     public void addHabit(HabitButtonContainer habit) {
         habitList.add(habit);
+        Habit.habits.add(habit.getHabit());
+        Habit.buttons.add(habit.getView().findViewById(R.id.habitButton));
+
     }
+
+    public void prepareButtonsForRemoval(Context context) {
+        for (HabitButtonContainer i :
+                habitList) {
+            i.prepareForRemoval(context);
+            Log.d("Datamanager", "Prepared habit "+i+" for removal");
+        }
+    }
+    public void undoPrepareButtonsForRemoval(Context context) {
+        for (HabitButtonContainer i :
+                habitList) {
+            i.getHabit().updateHabit(context);
+        }
+
+    }
+    public void removeHabit(HabitButtonContainer habit) {
+        habitList.remove(habit);
+        habit.delete();
+    }
+
+    public HabitButtonContainer getHabitButtonContainer(View view,Context context) {
+
+        for (HabitButtonContainer i :
+                habitList) {
+
+            if (i.getButton(context) == view) {
+                Log.d("Datamanager", "Returned "+i);
+                return i;
+            }
+        }
+        return null;
+    }
+
 
 }
