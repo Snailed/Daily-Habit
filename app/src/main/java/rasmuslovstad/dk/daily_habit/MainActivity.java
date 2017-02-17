@@ -1,6 +1,5 @@
 package rasmuslovstad.dk.daily_habit;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 public class MainActivity extends AppCompatActivity{
     //request codes
     static final int RECIEVE_HABIT = 1;
-    public static final boolean DEVELOPER_MODE = true;
+    public static final boolean DEVELOPER_MODE = false;
 
 
     RelativeLayout backgroundLayout;
@@ -30,13 +29,16 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         datamanager = Datamanager.getInstance();
+        datamanager.setContext(this);
         setContentView(R.layout.activity_main);
         backgroundLayout = (RelativeLayout) findViewById(R.id.activity_main);
         habitlistLayout = (LinearLayout) findViewById(R.id.habitlist);
         btTilfoej = (FloatingActionButton) findViewById(R.id.btNewHabit);
 
+
         if (DEVELOPER_MODE) addDeveloperHabits();
         addHabits();
+        datamanager.updateDatabase();
 
     }
 
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity{
                 //Log.d("Habit:", "Habit "+habit);
                 if (habit == null) Log.d("MainActivity", "Halløj! Denne view har ingen habit :( " + view + " Liste: " + Habit.habits);
                 if (habit.habitState()) {
-                    habit.undoCompleteObjective();
+                    habit.undoCompleteObjective(view);
                 } else {
                     habit.completeObjective(view);
                 }
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
             datamanager.getInstance().removeHabit(datamanager.getHabitButtonContainer(view,this));
             recreate();
         }
-
+        datamanager.updateDatabase();
     }
 
     public void pressCreateNewHabit(View view) {
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) Log.d("MainActivity", "Intenten som er modtaget fra CreateHabit er null... "+data);
@@ -101,9 +104,10 @@ public class MainActivity extends AppCompatActivity{
             }
 
         }
+        datamanager.updateDatabase();
     }
 
-    private void addHabits() {
+    public void addHabits() {
         for (LinearLayout i: datamanager.getAllLayout(this)) {
 
             habitlistLayout.addView(i);
@@ -121,5 +125,6 @@ public class MainActivity extends AppCompatActivity{
             datamanager.firstTimeRun = false;
         }
     }
+
 
 }

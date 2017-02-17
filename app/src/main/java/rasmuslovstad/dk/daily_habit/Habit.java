@@ -40,6 +40,17 @@ public class Habit implements Serializable{
 
 
     }
+
+
+
+    Habit(int repetitions, String titel, boolean state) {
+        this.titel = titel;
+        this.repetitions = repetitions;
+        this.completedObjective = state;
+        Log.d("Habit", "Har lavet en habit med titlen "+this.titel+", repetitionerne "+this.repetitions+" og staten "+this.completedObjective);
+
+
+    }
     LinearLayout createLayout(Context context) { //Gets called when you want a new layout
 
 
@@ -82,7 +93,8 @@ public class Habit implements Serializable{
 
     }
 
-    void undoCompleteObjective() {
+    void undoCompleteObjective(View view) {
+        updateButton(view);
         completedObjective = false;
         if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
@@ -159,6 +171,18 @@ public class Habit implements Serializable{
     }
     public void  updateButton(View view) {
         btHabit = (Button) view.findViewById(R.id.habitButton);
+    }
+
+    public int getRepetitions() {
+        return repetitions;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public boolean isCompletedObjective() {
+        return completedObjective;
     }
 
     private static void setMargins (View v, int left, int top, int right, int bottom) {

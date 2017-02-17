@@ -16,9 +16,9 @@ import java.io.Serializable;
  */
 
 public class HabitButtonContainer implements Serializable{
-    Habit habit;
-    View view;
-    Button button;
+    public Habit habit;
+    public View view;
+    public Button button;
     public HabitButtonContainer(Habit habit, View view) {
         this.habit = habit;
         this.view = view;
