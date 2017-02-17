@@ -103,8 +103,8 @@ public class Habit implements Serializable{
 
     }
 
-    void updateHabit(Context context) {
-
+    void updateHabit(Context context, View view) {
+        updateButton(view);
         if (completedObjective) {
             btHabit.setText("");
             setMargins(btHabit,0,0,0,10);

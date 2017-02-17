@@ -60,11 +60,13 @@ public class Datamanager {
     public void undoPrepareButtonsForRemoval(Context context) {
         for (HabitButtonContainer i :
                 habitList) {
-            i.getHabit().updateHabit(context);
+
+            i.getHabit().updateHabit(context, i.getView());
         }
 
     }
     public void removeHabit(HabitButtonContainer habit) {
+        removeHabitFromDatabas(habit);
         habitList.remove(habit);
         habit.delete();
     }
@@ -152,6 +154,12 @@ public class Datamanager {
 
 
 
+    }
+
+    public void removeHabitFromDatabas(HabitButtonContainer habitButtonContainer) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference habitref2 = database.getReference(habitButtonContainer.getHabit().getTitel());
+        habitref2.removeValue();
     }
 
     private void makeHabitsFromList(ArrayList<Object> list) {
