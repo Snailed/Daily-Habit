@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by rasmuslovstad on 2/13/17.
@@ -47,7 +48,7 @@ public class Datamanager {
         habitList.add(habit);
         Habit.habits.add(habit.getHabit());
         Habit.buttons.add(habit.getView().findViewById(R.id.habitButton));
-
+        Log.d("Datamanager", "Tilføjet habitten "+habit.getHabit().getTitel()+" Nu er habitlisten"+habitList);
     }
 
     public void prepareButtonsForRemoval(Context context) {
@@ -100,14 +101,13 @@ public class Datamanager {
                 if (!isWritingToDatabase || firstDataChange) {
                     Log.d("FirebaseDatamanager", "Der er ændret i databasen!");
                     for (DataSnapshot habitSnapshot : dataSnapshot.getChildren()) {
-                        for (DataSnapshot propertySnapshot : habitSnapshot.getChildren()) {
-                            Log.d("FirebaseDatamanager", "Child til snapshottet: " + propertySnapshot.getValue());
-                            list.add(propertySnapshot.getValue());
-                        }
+                        addHabit(makeHabitFromSnapshot(habitSnapshot));
+
                     }
-                    Log.d("FirebaseDatamanager", "Listen ======== " + list);
-                    makeHabitsFromList(list);
-                    list.clear();
+                    context.habitlistLayout.removeAllViews();
+                    context.addHabits();
+
+
                     firstDataChange = false;
                 }
             }
@@ -123,11 +123,11 @@ public class Datamanager {
                 if (databaseError == null) {
 
                     isWritingCounter++;
-                    if (isWritingCounter == 3) {
+                    if (isWritingCounter == 4) {
                         isWritingToDatabase = false;
                         isWritingCounter = 0;
                     }
-                    Log.d("Datamanager", "Gemte data korrekt. Nu er isWriting.."+isWritingToDatabase);
+                    //Log.d("Datamanager", "Gemte data korrekt. Nu er isWriting.."+isWritingToDatabase);
                 }
             }
         };
@@ -147,6 +147,8 @@ public class Datamanager {
             habitref2.child("repetitions").setValue(i.getHabit().getRepetitions(),completionListener);
             habitref2.child("title").setValue(i.getHabit().getTitel(),completionListener);
             habitref2.child("isCompleted").setValue(i.getHabit().isCompletedObjective(),completionListener);
+            habitref2.child("timeStampList").setValue(i.getHabit().getCheckedTimeStamps(),completionListener);
+
 
         }
 
@@ -162,46 +164,49 @@ public class Datamanager {
         habitref2.removeValue();
     }
 
-    private void makeHabitsFromList(ArrayList<Object> list) {
-        habitList.clear();
-        if (list.size()%3!=0 || list.size()<3) {
-            Log.d("Datamanager","Der er enten for mange eller for få elementer i listen...   Antal elementer: "+list.size());
-        } else {
+
+    private HabitButtonContainer makeHabitFromSnapshot(DataSnapshot snapshot) {
             String titel = "";
             boolean state = false;
             int reps = 0;
-            for (int i = 0; i < list.size(); i++) {
+            ArrayList<Long> dateList = new ArrayList<>();
+            Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
+            while (iterator.hasNext()) {
+               DataSnapshot i = iterator.next();
 
-                if (list.get(i) instanceof Boolean) {
-
-                    state = (Boolean) list.get(i);
-                    Log.d("Datamanager", "Fandt en Boolean!"+state);
-                }  else if (list.get(i) instanceof Long) {
-
-                    reps = safeLongToInt((long)list.get(i));
-                    Log.d("Datamanager", "Fandt en Integer!"+reps);
+                if (i.getKey().equals("isCompleted")) {
+                    state = (Boolean) i.getValue();
+                    //Log.d("Datamanager", "Fandt staten!!" + state);
                 }
-                else if (list.get(i) instanceof String) {
+                if (i.getKey().equals("repetitions")) {
+                    reps = safeLongToInt((Long)i.getValue());
+                    //Log.d("Datamanager", "Fandt reps!" + reps);
+                }
 
-                    titel = (String) list.get(i);
-                    Log.d("Datamanager", "Fandt en String!"+titel);
+                if (i.getKey().equals("title")) {
+                    titel = (String) i.getValue();
+                    //Log.d("Datamanager", "Fandt titlen!" + state);
+                }
+                if (i.getKey().equals("timeStampList")) {
+                    dateList = (ArrayList<Long>) i.getValue();
+                    //Log.d("Datamanager", "Fandt timestamplisten!" + dateList);
+                }
 
-                    Habit h = new Habit(reps,titel,state);
-                    LinearLayout layout = h.createLayout(context);
-
-                    addHabit(new HabitButtonContainer(h, layout));
-                    context.habitlistLayout.removeAllViews();
-                    context.addHabits();
-                    if (state) {
-                        h.completeObjective(layout);
-                    } else {
-                        h.undoCompleteObjective(layout);
-                    }
 
                 }
-            }
+        Habit h = new Habit(reps,titel,state, dateList);
+        LinearLayout layout = h.createLayout(context);
+        if (state) {
+            h.completeObjective(layout);
+        } else {
+            h.undoCompleteObjective(layout, h.isItUnderADaySinceLastPress());
+
         }
+        return new HabitButtonContainer(h, layout);
+
     }
+
+
     public static int safeLongToInt(long l) {
         if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
             throw new IllegalArgumentException

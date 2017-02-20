@@ -12,6 +12,9 @@ import android.widget.TextView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by rasmuslovstad on 1/4/17.
@@ -23,6 +26,7 @@ public class Habit implements Serializable{
     public String titel;
     static int numberOfHabits = 0;
     boolean completedObjective = false;
+    ArrayList<Date> checkedTimeStamps = new ArrayList<>();
 
     //buttons that belong to the habit
     Button btHabit;
@@ -43,11 +47,16 @@ public class Habit implements Serializable{
 
 
 
-    Habit(int repetitions, String titel, boolean state) {
+    Habit(int repetitions, String titel, boolean state, ArrayList<Long> checkedTimeStampsSinceEpoch) {
         this.titel = titel;
         this.repetitions = repetitions;
         this.completedObjective = state;
-        Log.d("Habit", "Har lavet en habit med titlen "+this.titel+", repetitionerne "+this.repetitions+" og staten "+this.completedObjective);
+        checkedTimeStamps.clear();
+        for (Long i : checkedTimeStampsSinceEpoch) {
+            checkedTimeStamps.add(new Date(i));
+        }
+
+        Log.d("Habit", "Har lavet en habit med titlen "+this.titel+", repetitionerne "+this.repetitions+" og staten "+this.completedObjective +" og timestampsene "+this.checkedTimeStamps);
 
 
     }
@@ -89,17 +98,21 @@ public class Habit implements Serializable{
         btHabit.setText("");
         setMargins(btHabit,0,0,0,10);
         btHabit.setBackgroundResource(R.drawable.completetaskbuttonpressed);
-
-
+        if (!isItUnderADaySinceLastPress()) {
+            checkedTimeStamps.add(Calendar.getInstance().getTime());
+        }
+        Log.d("Habit", "Tiden er "+Calendar.getInstance().getTime());
     }
 
-    void undoCompleteObjective(View view) {
+    void undoCompleteObjective(View view, boolean deleteTimeStamp) {
         updateButton(view);
         completedObjective = false;
         if (repetitions != 0)btHabit.setText(""+ repetitions);
         else btHabit.setText("");
         setMargins(btHabit,0,0,0,10);
         btHabit.setBackgroundResource(R.drawable.completetaskbutton);
+        if (checkedTimeStamps.size() > 0 && deleteTimeStamp) checkedTimeStamps.remove(checkedTimeStamps.size()-1);
+
 
     }
 
@@ -183,6 +196,29 @@ public class Habit implements Serializable{
 
     public boolean isCompletedObjective() {
         return completedObjective;
+    }
+
+    public ArrayList<Long> getCheckedTimeStamps() {
+        ArrayList<Long> timeStampsSinceEpoch = new ArrayList<>();
+        for (Date i : checkedTimeStamps) {
+            timeStampsSinceEpoch.add(i.getTime());
+        }
+        return timeStampsSinceEpoch;
+    }
+
+    public boolean isItUnderADaySinceLastPress() {
+        if (checkedTimeStamps.size()>0) {
+
+            Calendar timestamp = new GregorianCalendar();
+            timestamp.setTime(checkedTimeStamps.get(checkedTimeStamps.size()-1));
+            Log.d("Habit", "Timestamps: "+checkedTimeStamps);
+            Log.d("Habit", "Last pressed... "+ timestamp.get(Calendar.DATE)+" It is now "+Calendar.getInstance().get(Calendar.DATE));
+           if (!(timestamp.get(Calendar.DATE) < Calendar.getInstance().get(Calendar.DATE))) {
+
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void setMargins (View v, int left, int top, int right, int bottom) {

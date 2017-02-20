@@ -14,7 +14,6 @@ import android.widget.Toast;
 public class CreateHabit extends AppCompatActivity {
     EditText title;
     EditText reps;
-    EditText unit;
 
 
     @Override
@@ -28,7 +27,6 @@ public class CreateHabit extends AppCompatActivity {
 
         title = (EditText) findViewById(R.id.etTitle);
         reps = (EditText) findViewById(R.id.etReps);
-        unit = (EditText) findViewById(R.id.etUnit);
     }
 
     public void pressConfirmCreateNewHabit(View v) {

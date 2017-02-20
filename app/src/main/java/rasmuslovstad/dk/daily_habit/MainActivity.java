@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void pressComplete(View view) {
-        //Log.d("MainActivity ", "A button was pushed!");
 
         if (!preparedForRemoval) { //When the habits are pressed, they should check or uncheck. If preparedForRemoval is true, the habit should disappear
             if (view instanceof Button) {
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity{
                 //Log.d("Habit:", "Habit "+habit);
                 if (habit == null) Log.d("MainActivity", "Halløj! Denne view har ingen habit :( " + view + " Liste: " + Habit.habits);
                 if (habit.habitState()) {
-                    habit.undoCompleteObjective(view);
+                    habit.undoCompleteObjective(view,habit.isItUnderADaySinceLastPress());
                 } else {
                     habit.completeObjective(view);
                 }
